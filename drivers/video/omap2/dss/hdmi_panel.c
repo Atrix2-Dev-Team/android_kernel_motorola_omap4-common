@@ -31,6 +31,11 @@
 
 #include <video/hdmi_ti_4xxx_ip.h>
 
+#ifdef CONFIG_HDMI_TOGGLE
+#include <linux/hdmi_toggle.h>
+extern bool hdmi_active;
+#endif
+
 static struct {
 	struct mutex hdmi_lock;
 	struct switch_dev hpd_switch;
@@ -171,7 +176,6 @@ static struct attribute_group hdmi_panel_attr_group = {
 static int hdmi_panel_probe(struct omap_dss_device *dssdev)
 {
 	DSSDBG("ENTER hdmi_panel_probe\n");
-
 	dssdev->panel.config = OMAP_DSS_LCD_TFT |
 			OMAP_DSS_LCD_IVS | OMAP_DSS_LCD_IHS;
 
@@ -306,6 +310,18 @@ static void hdmi_hotplug_detect_worker(struct work_struct *work)
 		return;
 
 	mutex_lock(&hdmi.hdmi_lock);
+#ifdef CONFIG_HDMI_TOGGLE
+if (hdmi_active == false)
+	{	
+	pr_info("HDMI_TOGGLE: Panel disabled by user\n");
+	mutex_unlock(&hdmi.hdmi_lock);
+	dssdev->driver->disable(dssdev);
+	omapdss_hdmi_enable_s3d(false);
+	mutex_lock(&hdmi.hdmi_lock);
+		goto done;
+	}
+else if (hdmi_active == true)
+#endif
 	if (state == HPD_STATE_OFF) {
 		switch_set_state(&hdmi.hpd_switch, 0);
 		hdmi_inform_hpd_to_cec(false);

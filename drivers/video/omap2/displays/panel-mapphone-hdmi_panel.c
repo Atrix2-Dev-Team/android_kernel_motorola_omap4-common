@@ -32,6 +32,10 @@
 
 #include <video/hdmi_ti_4xxx_ip.h>
 
+#ifdef CONFIG_HDMI_TOGGLE
+extern bool hdmi_active;
+#endif
+
 /*#define HDTV_DEBUG*/
 #ifdef HDTV_DEBUG
 #define HDTVDBG(format, ...) \
@@ -256,7 +260,17 @@ static void hdmi_hotplug_detect_worker(struct work_struct *work)
 	HDTVDBG("hpd (%d/%d)\n", state, dssdev->state);
 	if (dssdev == NULL)
 		return;
-
+#ifdef CONFIG_HDMI_TOGGLE
+if (hdmi_active == false)
+	{
+	pr_info("HDMI_TOGGLE: Panel disabled\n");
+	mutex_unlock(&hdmi.hdmi_lock);
+	dssdev->driver->disable(dssdev);
+	mutex_lock(&hdmi.hdmi_lock);
+		goto done;
+	}
+else if (hdmi_active == true)
+#endif
 	mutex_lock(&hdmi.hdmi_lock);
 	if (state == HPD_STATE_OFF) {
 		switch_set_state(&hdmi.hpd_switch, 0);
@@ -444,6 +458,7 @@ static int hdmi_set_hpd(struct omap_dss_device *dssdev, bool enable)
 	mutex_lock(&hdmi.hdmi_lock);
 
 	sHpdEnabled = enable;
+
 	rc = omapdss_set_hdmi_hpd(dssdev, enable);
 
 	mutex_unlock(&hdmi.hdmi_lock);

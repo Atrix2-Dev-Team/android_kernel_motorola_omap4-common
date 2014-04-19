@@ -42,6 +42,10 @@
 #include "../../../drivers/video/omap2/dss/dss_features.h"
 #include "../../../drivers/video/omap2/dss/dss.h"
 
+#ifdef CONFIG_HDMI_TOGGLE
+extern bool hdmi_active;
+#endif
+
 #define HDMI_WP		0x0
 #define HDMI_CORE_SYS	0x400
 #define HDMI_CORE_AV	0x900
@@ -257,7 +261,15 @@ int hdmi_audio_notifier_callback(struct notifier_block *nb,
 				unsigned long arg, void *ptr)
 {
 	enum omap_dss_display_state state = arg;
-
+#ifdef CONFIG_HDMI_TOGGLE
+if (hdmi_active == false)
+	{
+	pr_info("HDMI_TOGGLE: SOUND_CODEC: OFF\n");
+	cancel_delayed_work(&hdmi_data.delayed_work);
+		return 0;
+	}
+else if (hdmi_active == true)
+#endif
 	if (state == OMAP_DSS_DISPLAY_ACTIVE) {
 		/* this happens just after hdmi_power_on */
 		hdmi_audio_set_configuration(&hdmi_data);
@@ -414,7 +426,6 @@ dssdev_err:
 	iounmap(hdmi_data.ip_data.base_wp);
 res_err:
 	return ret;
-
 }
 
 static int hdmi_remove(struct snd_soc_codec *codec)
