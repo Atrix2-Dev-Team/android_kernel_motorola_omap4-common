@@ -693,4 +693,10 @@ source "drivers/misc/radio_ctrl/Kconfig"
 source "drivers/misc/ts27010mux/Kconfig"
 source "drivers/misc/gc-core/Kconfig"
 
+config HDMI_TOGGLE
+        bool "Support toggling hdmi by userspace"
+        default y
+        help
+          Say Y here to enable HDMI toggle Feature 
+
 endif # MISC_DEVICES

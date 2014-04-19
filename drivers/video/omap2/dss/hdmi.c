@@ -43,6 +43,11 @@
 #include "dss.h"
 #include "dss_features.h"
 
+#ifdef CONFIG_HDMI_TOGGLE
+#include <linux/hdmi_toggle.h>
+extern bool hdmi_active;
+#endif
+
 #ifdef CONFIG_OMAP_PM
 #include <linux/pm_qos_params.h>
 static struct pm_qos_request_list pm_qos_handle;
@@ -953,9 +958,19 @@ int omapdss_hdmi_display_enable(struct omap_dss_device *dssdev)
 		DSSERR("failed to power on device\n");
 		goto err4;
 	}
-
+#ifdef CONFIG_HDMI_TOGGLE
+if (hdmi_active == false)
+	{
+	pr_info("HDMI_TOGGLE: disabled by user\n");
+	omapdss_hdmi_display_disable(dssdev);
+	}
+else if (hdmi_active == true)
+	{
 	hdmi.enabled = true;
-
+	}
+#else
+	hdmi.enabled = true;
+#endif
 	mutex_unlock(&hdmi.lock);
 	return 0;
 
