@@ -313,6 +313,7 @@ static void hdmi_hotplug_detect_worker(struct work_struct *work)
 if (hdmi_active == false)
 	{	
 	pr_info("HDMI_TOGGLE: Panel disabled by user\n");
+	switch_set_state(&hdmi.hpd_switch, 0);
 	mutex_unlock(&hdmi.hdmi_lock);
 	dssdev->driver->disable(dssdev);
 	omapdss_hdmi_enable_s3d(false);
