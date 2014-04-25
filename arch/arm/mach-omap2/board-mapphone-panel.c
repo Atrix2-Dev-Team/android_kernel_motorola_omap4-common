@@ -37,7 +37,6 @@
 /*#define DISABLED_FOR_BRINGUP*/
 /*#define DEBUG*/
 #ifdef CONFIG_HDMI_TOGGLE
-#include <linux/hdmi_toggle.h>
 extern bool hdmi_active;
 #endif
 
