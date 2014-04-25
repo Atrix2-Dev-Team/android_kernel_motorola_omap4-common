@@ -44,7 +44,6 @@
 #include "dss_features.h"
 
 #ifdef CONFIG_HDMI_TOGGLE
-#include <linux/hdmi_toggle.h>
 extern bool hdmi_active;
 #endif
 
