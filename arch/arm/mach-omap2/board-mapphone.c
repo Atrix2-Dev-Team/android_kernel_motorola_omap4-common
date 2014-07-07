@@ -83,7 +83,11 @@
 #include <linux/skbuff.h>
 #include <linux/ti_wilink_st.h>
 #include <plat/omap-serial.h>
+
+#ifdef CONFIG_OMAP_HSI
 #include <plat/omap_hsi.h>
+#endif
+
 #include <linux/wl12xx.h>
 
 #ifdef CONFIG_SND_LM48901_AMP

@@ -26,7 +26,11 @@
 
 #include <asm/hardware/gic.h>
 #include <mach/omap4-common.h>
+
+#ifdef CONFIG_OMAP_HSI
 #include <plat/omap_hsi.h>
+#endif
+
 #include <plat/common.h>
 #include <plat/temperature_sensor.h>
 #include <plat/usb.h>
@@ -1002,7 +1006,6 @@ static void __init prcm_setup_regs(void)
 	struct clk *clk32k = clk_get(NULL, "sys_32k_ck");
 	unsigned long rate32k = 0;
 	u32 val, tshut, tstart;
-	u32 reset_delay_time = 0;
 
 	if (clk32k) {
 		rate32k = clk_get_rate(clk32k);
@@ -1074,6 +1077,7 @@ static void __init prcm_setup_regs(void)
 	 * (in case WDT triggered while CLKREQ goes low), we also
 	 * add in the additional latencies.
 	 */
+	u32 reset_delay_time = 0;
 	if (!voltdm_for_each(_voltdm_sum_time, (void *)&reset_delay_time)) {
 		reset_delay_time += tstart + tshut;
 		val = _usec_to_val_scrm(rate32k, reset_delay_time,
@@ -1190,7 +1194,6 @@ void omap_pm_clear_dsp_wake_up(void)
 static irqreturn_t prcm_interrupt_handler (int irq, void *dev_id)
 {
 	u32 irqenable_mpu, irqstatus_mpu;
-	int hsi_port;
 
 	irqenable_mpu = omap4_prm_read_inst_reg(OMAP4430_PRM_OCP_SOCKET_INST,
 					 OMAP4_PRM_IRQENABLE_MPU_OFFSET);
@@ -1199,10 +1202,13 @@ static irqreturn_t prcm_interrupt_handler (int irq, void *dev_id)
 
 	/* Check if a IO_ST interrupt */
 	if (irqstatus_mpu & OMAP4430_IO_ST_MASK) {
+#ifdef CONFIG_OMAP_HSI
+	     int hsi_port;
 		/* Check if HSI caused the IO wakeup */
 		if (omap_hsi_is_io_wakeup_from_hsi(&hsi_port)) {
 			omap_hsi_wakeup(hsi_port);
 		}
+#endif
 		omap_uart_resume_idle();
 #ifndef CONFIG_USB_OOBWAKE
 		usbhs_wakeup();
