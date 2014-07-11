@@ -402,7 +402,7 @@ static int cap_prox_probe(struct i2c_client *client,
 	struct cap_prox_data *cp;
 	struct cap_prox_msg *msg;
 	u8 mesg_buf[sizeof(struct cap_prox_msg)];
-	u8 force_detect;
+//	u8 force_detect;
 	int err = -1;
 
 	if (pdata == NULL) {

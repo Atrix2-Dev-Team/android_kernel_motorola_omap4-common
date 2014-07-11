@@ -32,7 +32,7 @@
 #include <linux/earlysuspend.h>
 #endif
 static bool blanked;
-static u32 dev_display_mask;
+//static u32 dev_display_mask;
 
 #include <linux/ion.h>
 #include <plat/dma.h>
@@ -193,6 +193,7 @@ int dsscomp_gralloc_queue_ioctl(struct dsscomp_setup_dispc_data *d)
 	return ret;
 }
 
+#if 0
 static void dsscomp_gralloc_dma_cb(int channel, u16 status, void *data)
 {
 	if (!(status & OMAP_DMA_BLOCK_IRQ) && (status != 0))
@@ -263,6 +264,7 @@ transfer_done:
 	return err;
 }
 
+
 static void dsscomp_gralloc_do_clone(struct work_struct *work)
 {
 #ifdef CONFIG_DEBUG_FS
@@ -285,6 +287,8 @@ static void dsscomp_gralloc_do_clone(struct work_struct *work)
 		dsscomp_mgr_callback(wk->comp, -1, DSS_COMPLETION_ECLIPSED_SET);
 	kfree(wk);
 }
+
+
 
 static bool dsscomp_is_any_device_active(void)
 {
@@ -309,6 +313,7 @@ static bool dsscomp_is_any_device_active(void)
 	}
 	return false;
 }
+#endif
 
 int dsscomp_gralloc_queue(struct dsscomp_setup_dispc_data *d,
 			struct tiler_pa_info **pas,
@@ -337,7 +342,6 @@ int dsscomp_gralloc_queue(struct dsscomp_setup_dispc_data *d,
 	ion_phys_addr_t phys = 0;
 	size_t tiler2d_size;
 	struct tiler_view_t view;
-	u32 wb_mgr_ix;
 
 	/* reserve tiler areas if not already done so */
 	dsscomp_gralloc_init(cdev);

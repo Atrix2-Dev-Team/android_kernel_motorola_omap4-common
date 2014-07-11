@@ -28,6 +28,10 @@
 /*
  * HACK: Historically, Motorola products used little endian device trees.
  */
+#undef be32
+#undef be32_to_cpu
+#undef be32_to_cpup
+
 #define be32		u32
 #define be32_to_cpu(n)	(n)
 #define be32_to_cpup(p)	(*(p))

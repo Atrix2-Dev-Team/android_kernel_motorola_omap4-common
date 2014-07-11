@@ -939,6 +939,7 @@ static int __init pwrdms_setup(struct powerdomain *pwrdm, void *unused)
 	return ret;
 }
 
+#ifdef CONFIG_MOT_ENG_PHONE_RESET
 static int __init _voltdm_sum_time(struct voltagedomain *voltdm, void *user)
 {
 	struct omap_voltdm_pmic *pmic;
@@ -957,6 +958,7 @@ static int __init _voltdm_sum_time(struct voltagedomain *voltdm, void *user)
 
 	return 0;
 }
+#endif
 
 static u32 __init _usec_to_val_scrm(unsigned long rate, u32 usec,
 				    u32 shift, u32 mask)

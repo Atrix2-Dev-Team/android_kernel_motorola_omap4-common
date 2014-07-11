@@ -617,7 +617,7 @@ unregister_hotplug:
 disable:
 	if (enabled)
 		omap4_duty_cycle_set_enabled(false, false);
-exit:
+//exit:
 	return err;
 }
 

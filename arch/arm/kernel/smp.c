@@ -466,7 +466,7 @@ static void ipi_timer(void)
 {
 	struct clock_event_device *evt = &__get_cpu_var(percpu_clockevent);
 	if (evt->event_handler == NULL) {
-		printk(KERN_ERR "ipi_timer::evt(%lu)->event_handler==NULL\n", evt);
+		printk(KERN_ERR "ipi_timer::evt(%p)->event_handler==NULL\n", evt);
 	}
 	else {
 		evt->event_handler(evt);
@@ -621,6 +621,8 @@ void smp_send_all_cpu_backtrace(void)
 /*
  * ipi_cpu_backtrace - handle IPI from smp_send_all_cpu_backtrace()
  */
+
+#if 0
 static void ipi_cpu_backtrace(unsigned int cpu, struct pt_regs *regs)
 {
 	if (cpu_isset(cpu, backtrace_mask)) {
@@ -631,6 +633,7 @@ static void ipi_cpu_backtrace(unsigned int cpu, struct pt_regs *regs)
 		cpu_clear(cpu, backtrace_mask);
 	}
 }
+#endif
 
 /*
  * Main handler for inter-processor interrupts

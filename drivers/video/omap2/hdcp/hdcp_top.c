@@ -40,7 +40,7 @@ static int hdcp_bksv_read_error;
 #endif
 
 /* State machine / workqueue */
-static void hdcp_wq_disable(void);
+//static void hdcp_wq_disable(void);
 static void hdcp_wq_start_authentication(void);
 static void hdcp_wq_check_r0(void);
 static void hdcp_wq_step2_authentication(void);
@@ -126,6 +126,7 @@ static void hdcp_release_dss(void)
  * Function: hdcp_wq_disable
  *-----------------------------------------------------------------------------
  */
+#if 0
 static void hdcp_wq_disable(void)
 {
 	printk(KERN_INFO "HDCP: disabled\n");
@@ -134,6 +135,7 @@ static void hdcp_wq_disable(void)
 	hdcp_lib_disable();
 	hdcp.pending_disable = 0;
 }
+#endif
 
 /*-----------------------------------------------------------------------------
  * Function: hdcp_wq_start_authentication
@@ -947,6 +949,7 @@ static struct file_operations hdcp_fops = {
 
 struct miscdevice mdev;
 
+#ifndef CONFIG_PANEL_MAPPHONE_OMAP4_HDTV
 static void hdcp_load_keys_cb(const struct firmware *fw, void *context)
 {
 	struct hdcp_enable_control *en_ctrl;
@@ -977,6 +980,7 @@ static void hdcp_load_keys_cb(const struct firmware *fw, void *context)
 	pr_info("HDCP: loaded keys\n");
 }
 
+
 static int hdcp_load_keys(void)
 {
 	int ret;
@@ -992,7 +996,7 @@ static int hdcp_load_keys(void)
 
 	return 0;
 }
-
+#endif
 
 /*-----------------------------------------------------------------------------
  * Function: hdcp_init

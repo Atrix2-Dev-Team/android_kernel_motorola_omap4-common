@@ -186,7 +186,6 @@ void cpcap_musb_notifier_call(unsigned long event)
 	struct omap_musb_board_data *data = pdata->board_data;
 	static int hostmode;
 	u32 val;
-	u8 power;
 
 	switch (event) {
 	case USB_EVENT_ID:
@@ -456,7 +455,6 @@ static void omap2430_musb_try_idle(struct musb *musb, unsigned long timeout)
 static void omap2430_musb_set_vbus(struct musb *musb, int is_on)
 {
 	u8		devctl;
-	unsigned long timeout = jiffies + msecs_to_jiffies(1000);
 	int ret = 1;
 	/* HDRC controls CPEN, but beware current surges during device
 	 * connect.  They can trigger transient overcurrent conditions

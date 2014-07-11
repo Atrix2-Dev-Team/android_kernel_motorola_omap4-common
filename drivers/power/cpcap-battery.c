@@ -181,7 +181,6 @@ MODULE_PARM_DESC(cc_counter_percentage, "Charge cycle counter percentage value")
 void cpcap_batt_irq_hdlr(enum cpcap_irqs irq, void *data)
 {
 	struct cpcap_batt_ps *sply = data;
-	struct cpcap_platform_data *pdata = sply->cpcap->spi->dev.platform_data;
 
 	mutex_lock(&sply->lock);
 	sply->data_pending = 1;
@@ -736,7 +735,6 @@ prb_exit:
 static int cpcap_batt_remove(struct platform_device *pdev)
 {
 	struct cpcap_batt_ps *sply = platform_get_drvdata(pdev);
-	struct cpcap_platform_data *pdata = sply->cpcap->spi->dev.platform_data;
 
 	power_supply_unregister(&sply->batt);
 	power_supply_unregister(&sply->ac);
@@ -759,7 +757,6 @@ static int cpcap_batt_remove(struct platform_device *pdev)
 static int cpcap_batt_resume(struct platform_device *pdev)
 {
 	struct cpcap_batt_ps *sply = platform_get_drvdata(pdev);
-	struct cpcap_platform_data *pdata = sply->cpcap->spi->dev.platform_data;
 	unsigned long cur_time;
 	unsigned long long temp;
 

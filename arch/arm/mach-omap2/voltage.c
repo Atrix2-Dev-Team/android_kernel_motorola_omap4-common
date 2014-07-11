@@ -96,7 +96,7 @@ static int __init _config_common_vdd_data(struct voltagedomain *voltdm)
 static ssize_t time_in_opps_show(struct kobject *kobj,
 			struct kobj_attribute *attr, char *buf)
 {
-	int i, j, k;
+	int j, k;
 	s64 t;
 	char *s = buf;
 	struct voltagedomain *voltdm;

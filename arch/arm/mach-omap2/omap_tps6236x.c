@@ -216,6 +216,7 @@ static __initdata struct omap_pmic_description tps_pmic_desc = {
  * @value:	value to write
  * @reg:	register to write to
  */
+#ifdef CONFIG_TWL4030_CORE
 static int __init _twl_i2c_rmw_u8(u8 mod_no, u8 mask, u8 value, u8 reg)
 {
 	int ret;
@@ -232,6 +233,7 @@ static int __init _twl_i2c_rmw_u8(u8 mod_no, u8 mask, u8 value, u8 reg)
 out:
 	return ret;
 }
+#endif
 
 /**
  * omap4_twl_tps62361_enable() - Enable tps chip

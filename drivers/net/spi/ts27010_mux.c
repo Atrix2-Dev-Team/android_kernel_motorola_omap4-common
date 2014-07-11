@@ -146,9 +146,11 @@ static void ts27010_debughex(int level, const char *header,
 static void ts27010_debugrbufhex(int level, const char *header,
 				 struct ts27010_ringbuf *rbuf,
 				 int idx, int len) { }
+#ifdef SUPPORT_MUX_CMD_DATA_TAG
 static void ts27010_debugrbuf(int level, const char *header,
 			      struct ts27010_ringbuf *rbuf,
 			      int idx, int len) { }
+#endif /* SUPPORT_MUX_CMD_DATA_TAG */
 static void ts27010_debugstr(int level, const char *header,
 			     const char *buf, int len) { }
 #define ts_debug(level, format, arg...)	do {	\

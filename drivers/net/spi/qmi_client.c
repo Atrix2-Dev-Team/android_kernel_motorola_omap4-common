@@ -317,6 +317,7 @@ static bool qmi_client_add(struct qmi_clients *clients,
 	return true;
 }
 
+/*
 static void qmi_client_dump(struct qmi_clients *clients)
 {
 	unsigned long flags;
@@ -328,7 +329,7 @@ static void qmi_client_dump(struct qmi_clients *clients)
 		pr_debug("client=%p, cid=%d\n", client, client->cid);
 	}
 	spin_unlock_irqrestore(&clients->lock, flags);
-}
+} */
 
 /* Reteive a client by cid from clients */
 struct qmi_client *qmi_client_by_cid(struct qmi_clients *clients, u16 cid)

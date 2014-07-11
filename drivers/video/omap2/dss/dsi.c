@@ -957,6 +957,7 @@ static int _dsi_unregister_isr(omap_dsi_isr_t isr, void *arg, u32 mask,
 	return -EINVAL;
 }
 
+/*
 static int dsi_register_isr(struct platform_device *dsidev, omap_dsi_isr_t isr,
 		void *arg, u32 mask)
 {
@@ -996,6 +997,7 @@ static int dsi_unregister_isr(struct platform_device *dsidev,
 
 	return r;
 }
+*/
 
 static int dsi_register_isr_vc(struct platform_device *dsidev, int channel,
 		omap_dsi_isr_t isr, void *arg, u32 mask)
@@ -3152,7 +3154,7 @@ static int dsi_vc_send_bta(struct platform_device *dsidev, int channel)
 int dsi_vc_send_bta_sync(struct omap_dss_device *dssdev, int channel)
 {
 	struct platform_device *dsidev = dsi_get_dsidev_from_dssdev(dssdev);
-	int r = 0, i = 0;
+	int r = 0;
 	u32 err;
 	struct dsi_data *dsi = dsi_get_dsidrv_data(dsidev);
 
