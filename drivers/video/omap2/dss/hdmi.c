@@ -1190,3 +1190,4 @@ void hdmi_dump_regs(struct seq_file *s)
 
 	hdmi_runtime_put();
 }
+
