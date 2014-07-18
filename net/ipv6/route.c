@@ -804,8 +804,7 @@ restart:
 	dst_hold(&rt->dst);
 	read_unlock_bh(&table->tb6_lock);
 
-	if (!dst_get_neighbour_raw(&rt->dst) &&
-	    !(rt->rt6i_flags & (RTF_NONEXTHOP | RTF_LOCAL)))
+	if (!dst_get_neighbour_raw(&rt->dst) && !(rt->rt6i_flags & RTF_NONEXTHOP))
 		nrt = rt6_alloc_cow(rt, &fl6->daddr, &fl6->saddr);
 	else if (!(rt->dst.flags & DST_HOST))
 		nrt = rt6_alloc_clone(rt, &fl6->daddr);
@@ -2416,12 +2415,8 @@ static int rt6_fill_node(struct net *net,
 
 	rcu_read_lock();
 	n = dst_get_neighbour(&rt->dst);
-	if (n) {
-		if (nla_put(skb, RTA_GATEWAY, 16, &n->primary_key) < 0) {
-			rcu_read_unlock();
-			goto nla_put_failure;
-		}
-	}
+	if (n)
+		NLA_PUT(skb, RTA_GATEWAY, 16, &n->primary_key);
 	rcu_read_unlock();
 
 	if (rt->dst.dev)
