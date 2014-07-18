@@ -127,13 +127,14 @@ static struct omap4_keypad_platform_data omap_kp_data = {
 	.rep		= 0,
 };
 
+/*
 static struct platform_device omap_kp_device = {
 	.name		= "omap4-keypad",
 	.id		= -1,
 	.dev		= {
 		.platform_data = &omap_kp_data,
 	},
-};
+};*/
 
 /* Do not break the EV_SW When enable omap4 keyboard driver. */
 static int virtual_matrix_func(struct gpio_event_input_devs *input_devs,

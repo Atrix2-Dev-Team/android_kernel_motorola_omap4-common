@@ -921,7 +921,6 @@ static int mapphone_dt_get_panel_feature(void)
 	if (panel_prop != NULL)
 		panel_data->ftr_support.som = *(bool *)panel_prop;
 
-end:
 	of_node_put(panel_node);
 err:
 	return r;
@@ -1041,8 +1040,6 @@ static int mapphone_dt_get_hdtv_info(void)
 {
 	struct device_node *panel_node;
 	const void *panel_prop;
-	struct omap_ovl2mgr_mapping *read_ovl2mgr_mapping = NULL;
-	int len = 0, i = 0;
 
 	PANELDBG("dt_get_hdtv_info()\n");
 
@@ -1464,7 +1461,7 @@ else if (hdmi_active == false)
 
 	return;
 
-failed_hdmi_5v:
+//failed_hdmi_5v:
 	gpio_free(mapphone_displ_lvds_wp_e);
 failed_req_lvds_wp_e:
 	gpio_free(mapphone_displ_lvds_wp_g);

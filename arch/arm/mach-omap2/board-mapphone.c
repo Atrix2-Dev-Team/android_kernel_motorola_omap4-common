@@ -849,6 +849,7 @@ static int set_cold_reset(struct notifier_block *this,
 	return NOTIFY_DONE;
 }
 
+#ifdef CONFIG_MOT_ENG_PHONE_RESET
 static struct notifier_block mapphone_panic_notifier = {
 	.notifier_call = set_cold_reset,
 	.priority = INT_MAX,
@@ -858,6 +859,7 @@ static struct notifier_block mapphone_cold_reboot_notifier = {
 	.notifier_call = set_cold_reset,
 	.priority = INT_MAX,
 };
+#endif
 
 static void mapphone_rst_init(void)
 {
