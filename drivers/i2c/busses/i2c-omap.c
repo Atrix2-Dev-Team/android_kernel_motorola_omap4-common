@@ -69,6 +69,7 @@ enum {
 	OMAP_I2C_BUF_REG,
 	OMAP_I2C_CNT_REG,
 	OMAP_I2C_DATA_REG,
+	OMAP_I2C_SYSC_REG,
 	OMAP_I2C_CON_REG,
 	OMAP_I2C_OA_REG,
 	OMAP_I2C_SA_REG,
@@ -83,7 +84,6 @@ enum {
 	OMAP_I2C_IRQSTATUS,
 	OMAP_I2C_IRQENABLE_SET,
 	OMAP_I2C_IRQENABLE_CLR,
-	OMAP_I2C_SYSC,
 };
 
 /* I2C Interrupt Enable Register (OMAP_I2C_IE): */
@@ -209,6 +209,7 @@ const static u8 reg_map[] = {
 	[OMAP_I2C_BUF_REG] = 0x05,
 	[OMAP_I2C_CNT_REG] = 0x06,
 	[OMAP_I2C_DATA_REG] = 0x07,
+	[OMAP_I2C_SYSC_REG] = 0x08,
 	[OMAP_I2C_CON_REG] = 0x09,
 	[OMAP_I2C_OA_REG] = 0x0a,
 	[OMAP_I2C_SA_REG] = 0x0b,
@@ -229,6 +230,7 @@ const static u8 omap4_reg_map[] = {
 	[OMAP_I2C_BUF_REG] = 0x94,
 	[OMAP_I2C_CNT_REG] = 0x98,
 	[OMAP_I2C_DATA_REG] = 0x9c,
+	[OMAP_I2C_SYSC_REG] = 0x10,
 	[OMAP_I2C_CON_REG] = 0xa4,
 	[OMAP_I2C_OA_REG] = 0xa8,
 	[OMAP_I2C_SA_REG] = 0xac,
@@ -243,7 +245,6 @@ const static u8 omap4_reg_map[] = {
 	[OMAP_I2C_IRQSTATUS] = 0x28,
 	[OMAP_I2C_IRQENABLE_SET] = 0x2c,
 	[OMAP_I2C_IRQENABLE_CLR] = 0x30,
-	[OMAP_I2C_SYSC] = 0x10,
 };
 
 static inline void omap_i2c_write_reg(struct omap_i2c_dev *i2c_dev,
@@ -267,8 +268,8 @@ static void omap_i2c_dump_registers(struct omap_i2c_dev *i2c_dev,
 		omap_i2c_read_reg(i2c_dev, OMAP_I2C_REVNB_LO));
 	dev_err(i2c_dev->dev, "OMAP_I2C_REVNB_HI = %04X",
 		omap_i2c_read_reg(i2c_dev, OMAP_I2C_REVNB_HI));
-	dev_err(i2c_dev->dev, "OMAP_I2C_SYSC=%04X",
-		omap_i2c_read_reg(i2c_dev, OMAP_I2C_SYSC));
+	dev_err(i2c_dev->dev, "OMAP_I2C_SYSC_REG=%04X",
+		omap_i2c_read_reg(i2c_dev, OMAP_I2C_SYSC_REG));
 	dev_err(i2c_dev->dev, "OMAP_I2C_IRQSTATUS_RAW = %04X",
 		omap_i2c_read_reg(i2c_dev, OMAP_I2C_IRQSTATUS_RAW));
 	dev_err(i2c_dev->dev, "OMAP_I2C_IRQSTATUS = %04X",
