@@ -29,13 +29,13 @@ static void __iomem *l2x0_base;
 static DEFINE_SPINLOCK(l2x0_lock);
 static uint32_t l2x0_way_mask;	/* Bitmask of active ways */
 static uint32_t l2x0_size;
-static u32 l2x0_cache_id;
+static u32 cache_id;
 static unsigned int l2x0_sets;
 static unsigned int l2x0_ways;
 
 static inline bool is_pl310_rev(int rev)
 {
-	return (l2x0_cache_id &
+	return (cache_id &
 		(L2X0_CACHE_ID_PART_MASK | L2X0_CACHE_ID_REV_MASK)) ==
 			(L2X0_CACHE_ID_PART_L310 | rev);
 }
@@ -320,22 +320,42 @@ static void l2x0_disable(void)
 	spin_unlock_irqrestore(&l2x0_lock, flags);
 }
 
+static void __init l2x0_unlock(__u32 cache_id)
+{
+	int lockregs;
+	int i;
+
+	if (cache_id == L2X0_CACHE_ID_PART_L310)
+		lockregs = 8;
+	else
+		/* L210 and unknown types */
+		lockregs = 1;
+
+	for (i = 0; i < lockregs; i++) {
+		writel_relaxed(0x0, l2x0_base + L2X0_LOCKDOWN_WAY_D_BASE +
+			       i * L2X0_LOCKDOWN_STRIDE);
+		writel_relaxed(0x0, l2x0_base + L2X0_LOCKDOWN_WAY_I_BASE +
+			       i * L2X0_LOCKDOWN_STRIDE);
+	}
+}
+
 void __init l2x0_init(void __iomem *base, __u32 aux_val, __u32 aux_mask)
 {
 	__u32 aux;
+	__u32 cache_id;
 	__u32 way_size = 0;
 	const char *type;
 
 	l2x0_base = base;
 
-	l2x0_cache_id = readl_relaxed(l2x0_base + L2X0_CACHE_ID);
+	cache_id = readl_relaxed(l2x0_base + L2X0_CACHE_ID);
 	aux = readl_relaxed(l2x0_base + L2X0_AUX_CTRL);
 
 	aux &= aux_mask;
 	aux |= aux_val;
 
 	/* Determine the number of ways */
-	switch (l2x0_cache_id & L2X0_CACHE_ID_PART_MASK) {
+	switch (cache_id & L2X0_CACHE_ID_PART_MASK) {
 	case L2X0_CACHE_ID_PART_L310:
 		if (aux & (1 << 16))
 			l2x0_ways = 16;
@@ -370,6 +390,8 @@ void __init l2x0_init(void __iomem *base, __u32 aux_val, __u32 aux_mask)
 	 * accessing the below registers will fault.
 	 */
 	if (!(readl_relaxed(l2x0_base + L2X0_CTRL) & 1)) {
+		/* Make sure that I&D is not locked down when starting */
+		l2x0_unlock(cache_id);
 
 		/* l2x0 controller is disabled */
 		writel_relaxed(aux, l2x0_base + L2X0_AUX_CTRL);
@@ -391,5 +413,5 @@ void __init l2x0_init(void __iomem *base, __u32 aux_val, __u32 aux_mask)
 
 	printk(KERN_INFO "%s cache controller enabled\n", type);
 	printk(KERN_INFO "l2x0: %d ways, CACHE_ID 0x%08x, AUX_CTRL 0x%08x, Cache size: %d B\n",
-			l2x0_ways, l2x0_cache_id, aux, l2x0_size);
+			l2x0_ways, cache_id, aux, l2x0_size);
 }
