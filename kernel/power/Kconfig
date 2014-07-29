@@ -50,6 +50,11 @@ config USER_WAKELOCK
 	  Write "lockname" to /sys/power/wake_unlock to unlock a user wake
 	  lock.
 
+config WAKELOCK_BLACKLIST
+	bool "wake lock blacklist"
+	depends on WAKELOCK && PROC_FS
+	default n
+
 config EARLYSUSPEND
 	bool "Early suspend"
 	depends on WAKELOCK
