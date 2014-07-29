@@ -357,6 +357,10 @@ power_attr(wake_lock);
 power_attr(wake_unlock);
 #endif
 
+#ifdef CONFIG_WAKELOCK_BLACKLIST
+power_attr(wakelock_blacklist);
+#endif
+
 static struct attribute * g[] = {
 	&state_attr.attr,
 #ifdef CONFIG_PM_TRACE
@@ -372,6 +376,9 @@ static struct attribute * g[] = {
 #ifdef CONFIG_USER_WAKELOCK
 	&wake_lock_attr.attr,
 	&wake_unlock_attr.attr,
+#endif
+#ifdef CONFIG_WAKELOCK_BLACKLIST
+	&wakelock_blacklist_attr.attr,
 #endif
 #endif
 	NULL,
