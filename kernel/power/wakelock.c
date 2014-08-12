@@ -511,7 +511,7 @@ static void wake_lock_internal(
 #ifdef CONFIG_WAKELOCK_BLACKLIST
 #define CMDLINE_BUF_SIZE 256
 	char buf[256],cmdline[80];
-	int cmdlen, i,ch, hasSquareBracket=0, arglen,bufsize;
+	int cmdlen, i, ch, hasSquareBracket=0, arglen=0;
 #endif
 
 	spin_lock_irqsave(&list_lock, irqflags);
@@ -520,45 +520,52 @@ static void wake_lock_internal(
 	BUG_ON(!(lock->flags & WAKE_LOCK_INITIALIZED));
 
 #ifdef CONFIG_WAKELOCK_BLACKLIST
+        memset(buf,'\0',sizeof(buf));
+        memset(cmdline,'\0',sizeof(cmdline));
 	cmdlen = 0;
-        if (!current->tgid || !current->mm || !current->mm->arg_end || !current->mm->arg_start){
-            goto blacklist_out;
-	}
-	arglen = current->mm->arg_end - current->mm->arg_start;
-        if (arglen > sizeof(buf))
-               arglen = sizeof(buf);
-	arglen = copy_to_user(buf, (const char *)current->mm->arg_start, arglen);
-	if (!arglen)
-		goto blacklist_out; 
-	for(i = 0; (ch = buf[i]) != '\0' && i < arglen; i++) {
-		if (ch == '[')
-			hasSquareBracket = 1;
-		if (ch == ']' && hasSquareBracket)
-			hasSquareBracket = 0;
-		if (hasSquareBracket == 0 && ch == '/')
-			cmdlen = 0;
-		else if (hasSquareBracket == 0 && isspace(ch))
-			break;
-		else{
-			if (cmdlen < (arglen-1))
-				cmdline[cmdlen++] = ch;
-			else
-				break;
-		}
-	}
+        if (current->tgid && current->mm && current->mm->arg_end && current->mm->arg_start){
+            arglen = current->mm->arg_end - current->mm->arg_start;
+            if (arglen > sizeof(buf))
+                arglen = sizeof(buf);
+            if (arglen < 3)
+                goto blacklist_out;
+            if (copy_from_user(buf,current->mm->arg_start, arglen))
+                goto blacklist_out;
+            for(i = 0; (ch = buf[i]) != '\0' && i < arglen; i++) {
+                if (ch == '['){
+                    hasSquareBracket = 1;
+                    continue;
+                }
+                if (ch == ']' && hasSquareBracket){
+                    hasSquareBracket = 0;
+                    continue;
+                }
+                if (hasSquareBracket == 0 && ch == '/')
+                    cmdlen = 0;
+                else if (hasSquareBracket == 0 && isspace(ch))
+                    break;
+                else if (cmdlen < (sizeof(cmdline)-1))
+                    cmdline[cmdlen++] = ch;
+                else
+                    break;
+             }
+        }
+
+blacklist_out:
 	cmdline[cmdlen]= '\0';
+        memset(buf,'\0',sizeof(buf));
 
-	if (!cmdlen)
-		goto blacklist_out;
-
-	snprintf(buf, bufsize, "%s : %s", lock->name, cmdline);
+        if (!cmdlen)
+            snprintf(buf,sizeof(buf),"%s",lock->name);
+        else
+	    snprintf(buf, sizeof(buf), "%s : %s", lock->name, cmdline);
+//        pr_info("wakelock_blacklist: buf=%s, arglen=%d\n",buf,arglen);
 	if (wakelock_blacklist_match(buf)){
 		if (debug_mask & DEBUG_WAKEUP)
 			pr_info("wake lock \"%s\" in blacklist,skip it.\n", lock->name);
 		spin_unlock_irqrestore(&list_lock, irqflags);
 		return;
 	}
-blacklist_out:
 #endif
 #ifdef CONFIG_WAKELOCK_STAT
 	if (type == WAKE_LOCK_SUSPEND && wait_for_wakeup) {
