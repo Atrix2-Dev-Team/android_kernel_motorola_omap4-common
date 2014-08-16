@@ -22,12 +22,6 @@
 #ifdef CONFIG_WAKELOCK_STAT
 #include <linux/proc_fs.h>
 #endif
-
-#ifdef CONFIG_WAKELOCK_BLACKLIST
-#include <linux/ctype.h>
-#include <linux/sched.h>
-#endif
-
 #include "power.h"
 
 enum {
@@ -508,58 +502,11 @@ static void wake_lock_internal(
 	int type;
 	unsigned long irqflags;
 	long expire_in;
-#ifdef CONFIG_WAKELOCK_BLACKLIST
-#define CMDLINE_BUF_SIZE 256
-	char buf[256],cmdline[80];
-	int cmdlen, i,ch, hasSquareBracket=0, arglen,bufsize;
-#endif
 
 	spin_lock_irqsave(&list_lock, irqflags);
 	type = lock->flags & WAKE_LOCK_TYPE_MASK;
 	BUG_ON(type >= WAKE_LOCK_TYPE_COUNT);
 	BUG_ON(!(lock->flags & WAKE_LOCK_INITIALIZED));
-
-#ifdef CONFIG_WAKELOCK_BLACKLIST
-	cmdlen = 0;
-        if (!current->tgid || !current->mm || !current->mm->arg_end || !current->mm->arg_start){
-            goto blacklist_out;
-	}
-	arglen = current->mm->arg_end - current->mm->arg_start;
-        if (arglen > sizeof(buf))
-               arglen = sizeof(buf);
-	arglen = copy_to_user(buf, (const char *)current->mm->arg_start, arglen);
-	if (!arglen)
-		goto blacklist_out; 
-	for(i = 0; (ch = buf[i]) != '\0' && i < arglen; i++) {
-		if (ch == '[')
-			hasSquareBracket = 1;
-		if (ch == ']' && hasSquareBracket)
-			hasSquareBracket = 0;
-		if (hasSquareBracket == 0 && ch == '/')
-			cmdlen = 0;
-		else if (hasSquareBracket == 0 && isspace(ch))
-			break;
-		else{
-			if (cmdlen < (arglen-1))
-				cmdline[cmdlen++] = ch;
-			else
-				break;
-		}
-	}
-	cmdline[cmdlen]= '\0';
-
-	if (!cmdlen)
-		goto blacklist_out;
-
-	snprintf(buf, bufsize, "%s : %s", lock->name, cmdline);
-	if (wakelock_blacklist_match(buf)){
-		if (debug_mask & DEBUG_WAKEUP)
-			pr_info("wake lock \"%s\" in blacklist,skip it.\n", lock->name);
-		spin_unlock_irqrestore(&list_lock, irqflags);
-		return;
-	}
-blacklist_out:
-#endif
 #ifdef CONFIG_WAKELOCK_STAT
 	if (type == WAKE_LOCK_SUSPEND && wait_for_wakeup) {
 		if (debug_mask & DEBUG_WAKEUP)
