@@ -239,9 +239,7 @@ bad_name:
 ssize_t wakelock_blacklist_match(const char * buf)
 {
 	struct wakelock_blacklist *l;
-	mutex_lock(&tree_lock_blacklist);
 	l = lookup_blacklist_wakelock_name(buf,0,1);
-	mutex_unlock(&tree_lock_blacklist);
 	if (!IS_ERR(l)){
 		if (debug_mask & DEBUG_ACCESS)
 			pr_info("wakelock_blacklist_match: %s (matched)\n",buf);
